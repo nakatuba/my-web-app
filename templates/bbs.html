@@ -1,0 +1,20 @@
+{% for message in messages %}
+<p>
+    {{ loop.index }}
+    {{ message.sender }}
+    {% if message.sender == sender %}
+    <strong>-自分-</strong>
+    {% endif %}
+    {{ message.date }}<br>
+    {{ message.text }}
+</p>
+{% endfor %}
+<form method="POST">
+    <P>
+        <input type="button" value="更新" onclick="location = location">
+    </P>
+    <p>
+        <input type="text" name="text">
+        <input type="submit" value="送信">
+    </p>
+</form>
