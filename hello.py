@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+import hashlib
 import datetime
 
 app = Flask(__name__)
@@ -64,7 +65,7 @@ def user():
     username = request.form.get('username')
     password = request.form.get('password')
     c.execute("select * from users where username=? and password=?",
-              (username, password))
+              (username, hashlib.sha256(password.encode()).hexdigest()))
     user = c.fetchone()
 
     conn.close()
@@ -86,9 +87,10 @@ def register():
     password = request.form.get('password')
 
     try:
-        c.execute("insert into users values (?, ?)", (username, password))
+        c.execute("insert into users values (?, ?)",
+                  (username, hashlib.sha256(password.encode()).hexdigest()))
     except sqlite3.IntegrityError:
-        return "同じニックネームがすでに登録済みです"
+        return "同じユーザーネームがすでに登録済みです"
 
     conn.commit()
 
