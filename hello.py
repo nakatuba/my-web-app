@@ -71,7 +71,7 @@ def user():
     conn.close()
 
     if user is None:
-        return "ユーザーネームまたはパスワードが違います"
+        return render_template('login.html', error="ユーザーネームまたはパスワードが違います")
     else:
         return redirect(url_for('bbs', sender=user['username']))
 
@@ -90,7 +90,7 @@ def register():
         c.execute("insert into users values (?, ?)",
                   (username, hashlib.sha256(password.encode()).hexdigest()))
     except sqlite3.IntegrityError:
-        return "同じユーザーネームがすでに登録済みです"
+        return render_template('login.html', error="同じユーザーネームがすでに登録済みです")
 
     conn.commit()
 
