@@ -1,0 +1,50 @@
+{% for message in messages %}
+    {% if loop.changed(message.date) %}
+        <p>{{ message.date }}</p>
+    {% endif %}
+    {% if message.sender == sender or message.receiver == "全員" or message.receiver == sender %}
+        <table>
+            <tr>
+                <td rowspan="2" valign="top">
+                    <img src="../static/captain.jpg" width="40" height="40" style="border-radius: 50%;">
+                </td>
+                <td>
+                    {{ message.sender }}
+                    {% if message.sender == sender %}
+                        <strong>-自分-</strong>
+                    {% endif %}
+                    {{ message.time }}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    {% if message.receiver != "全員" %}
+                        <span style="color: blue;">@{{ message.receiver }}</span>
+                    {% endif %}
+                    <span style="white-space: pre-wrap;">{{ message.text }}</span>
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+{% endfor %}
+
+<form method="POST">
+    <P>
+        <input type="button" value="更新" onclick="location = location">
+    </P>
+    <p>
+        宛先：
+        <select name="receiver">
+            <option>全員</option>
+            {% for user in users %}
+                {% if user.username != sender %}
+                <option>{{ user.username }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </p>
+    <p>
+        <textarea name="text" rows="4" cols="40"></textarea>
+        <input type="submit" value="送信">
+    </p>
+</form>

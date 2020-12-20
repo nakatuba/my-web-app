@@ -6,48 +6,13 @@ import datetime
 app = Flask(__name__)
 
 
+def hash(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+
 @app.route('/')
 def hello_world():
     return redirect(url_for('login'))
-
-
-@app.route('/sum')
-def sum():
-    return render_template('sum.html')
-
-
-@app.route('/result')
-def result():
-    return str(int(request.args.get('a')) + int(request.args.get('b')))
-
-
-@app.route('/students')
-def students():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-
-    c = conn.cursor()
-
-    # Create table
-    c.execute("create table if not exists students "
-              "(gakuseki_id, name, nickname)")
-
-    # Insert a row of data
-    gakuseki_id = request.args.get('gakuseki_id')
-    name = request.args.get('name')
-    nickname = request.args.get('nickname')
-    c.execute("insert into students values (?, ?, ?)",
-              (gakuseki_id, name, nickname))
-
-    # Save (commit) the changes
-    conn.commit()
-
-    c.execute("select * from students")
-    students = c.fetchall()
-
-    conn.close()
-
-    return render_template('students.html', students=students)
 
 
 @app.route('/login')
@@ -65,7 +30,7 @@ def user():
     username = request.form.get('username')
     password = request.form.get('password')
     c.execute("select * from users where username=? and password=?",
-              (username, hashlib.sha256(password.encode()).hexdigest()))
+              (username, hash(password)))
     user = c.fetchone()
 
     conn.close()
@@ -73,7 +38,7 @@ def user():
     if user is None:
         return render_template('login.html', error="ユーザーネームまたはパスワードが違います")
     else:
-        return redirect(url_for('bbs', sender=user['username']))
+        return redirect(url_for('chat', sender=user['username']))
 
 
 @app.route('/register', methods=['POST'])
@@ -88,7 +53,7 @@ def register():
 
     try:
         c.execute("insert into users values (?, ?)",
-                  (username, hashlib.sha256(password.encode()).hexdigest()))
+                  (username, hash(password)))
     except sqlite3.IntegrityError:
         return render_template('login.html', error="同じユーザーネームがすでに登録済みです")
 
@@ -96,27 +61,35 @@ def register():
 
     conn.close()
 
-    return redirect(url_for('bbs', sender=username))
+    return redirect(url_for('chat', sender=username))
 
 
-@app.route('/bbs/<sender>', methods=['GET', 'POST'])
-def bbs(sender):
+@app.route('/chat/<sender>', methods=['GET', 'POST'])
+def chat(sender):
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
 
     c = conn.cursor()
 
+    receiver = request.form.get('receiver')
     text = request.form.get('text')
     if text:
-        date = datetime.datetime.now().strftime('%Y年%m月%d日 %H:%M:%S')
-        c.execute("insert into messages values (?, ?, ?)",
-                  (sender, text, date))
+        date = datetime.datetime.now().strftime('%Y年%m月%d日')
+        time = datetime.datetime.now().strftime('%H:%M')
+        c.execute("insert into messages values (?, ?, ?, ?, ?)",
+                  (sender, receiver, text, date, time))
 
         conn.commit()
 
     c.execute("select * from messages")
     messages = c.fetchall()
 
+    c.execute("select * from users")
+    users = c.fetchall()
+
     conn.close()
 
-    return render_template('bbs.html', messages=messages, sender=sender)
+    return render_template('chat.html',
+                           messages=messages,
+                           sender=sender,
+                           users=users)
