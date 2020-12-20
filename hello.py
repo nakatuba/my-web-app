@@ -20,8 +20,8 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/user', methods=['POST'])
-def user():
+@app.route('/auth', methods=['POST'])
+def auth():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
 
@@ -29,6 +29,7 @@ def user():
 
     username = request.form.get('username')
     password = request.form.get('password')
+
     c.execute("select * from users where username=? and password=?",
               (username, hash(password)))
     user = c.fetchone()
@@ -41,21 +42,29 @@ def user():
         return redirect(url_for('chat', sender=user['username']))
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/register')
 def register():
+    return render_template('register.html')
+
+
+@app.route('/create', methods=['POST'])
+def create():
     conn = sqlite3.connect('database.db')
     conn.row_factory = sqlite3.Row
 
     c = conn.cursor()
 
+    icon = request.files.get('icon')
+    icon.save("./static/" + icon.filename)
+
     username = request.form.get('username')
     password = request.form.get('password')
 
     try:
-        c.execute("insert into users values (?, ?)",
-                  (username, hash(password)))
+        c.execute("insert into users values (?, ?, ?)",
+                  (icon.filename, username, hash(password)))
     except sqlite3.IntegrityError:
-        return render_template('login.html', error="同じユーザーネームがすでに登録済みです")
+        return render_template('register.html', error="同じユーザーネームがすでに登録済みです")
 
     conn.commit()
 
