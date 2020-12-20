@@ -1,4 +1,4 @@
-<form method="POST">
+<form action="auth" method="POST">
     <p style="color: red;">{{ error }}</p>
     <p>
         ユーザーネーム<br>
@@ -9,7 +9,9 @@
         <input type="password" name="password" required>
     </p>
     <p>
-        <input type="submit" value="ログイン" formaction="user">
-        <input type="submit" value="新規登録" formaction="register">
+        <input type="submit" value="ログイン">
+    </p>
+    <p>
+        初めての方は<a href="register">こちら</a>
     </p>
 </form>

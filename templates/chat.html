@@ -1,12 +1,16 @@
 {% for message in messages %}
     {% if loop.changed(message.date) %}
-        <p>{{ message.date }}</p>
+        {{ message.date }}
     {% endif %}
     {% if message.sender == sender or message.receiver == "全員" or message.receiver == sender %}
         <table>
             <tr>
                 <td rowspan="2" valign="top">
-                    <img src="../static/captain.jpg" width="40" height="40" style="border-radius: 50%;">
+                    {% for user in users %}
+                        {% if user.username == sender %}
+                            <img src={{ "../static/" + user.icon }} width="40" height="40" style="border-radius: 50%;">
+                        {% endif %}
+                    {% endfor %}
                 </td>
                 <td>
                     {{ message.sender }}

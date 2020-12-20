@@ -1,17 +1,17 @@
-<form action="students">
+<form action="create" method="POST" enctype="multipart/form-data">
     <p>
-        学籍番号<br>
-        <input type="text" name="gakuseki_id">
+        アイコン<br>
+        <input type="file" name="icon" accept="image/*" required>
     </p>
     <p>
-        名前<br>
-        <input type="text" name="name">
+        ユーザーネーム<br>
+        <input type="text" name="username" required>
     </p>
     <p>
-        ニックネーム<br>
-        <input type="text" name="nickname">
+        パスワード<br>
+        <input type="password" name="password" required>
     </p>
     <p>
-        <input type="submit" value="登録">
+        <input type="submit" value="登録する">
     </p>
 </form>
