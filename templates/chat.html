@@ -1,21 +1,21 @@
 {% for message in messages %}
     {% if loop.changed(message.date) %}
-        {{ message.date }}
+        <b>{{ message.date }}</b><hr>
     {% endif %}
     {% if message.sender == sender or message.receiver == "全員" or message.receiver == sender %}
-        <table>
+        <table style="margin-bottom: 20px;">
             <tr>
                 <td rowspan="2" valign="top">
                     {% for user in users %}
                         {% if user.username == message.sender %}
-                            <img src={{ "../static/" + user.icon }} width="40" height="40" style="border-radius: 50%;">
+                            <img src={{ "../static/" + user.icon }} width="50" height="50" style="border-radius: 50%;">
                         {% endif %}
                     {% endfor %}
                 </td>
                 <td>
-                    {{ message.sender }}
+                    <b>{{ message.sender }}</b>
                     {% if message.sender == sender %}
-                        <strong>-自分-</strong>
+                        <b style="color: green;">-自分-</b>
                     {% endif %}
                     {{ message.time }}
                 </td>
@@ -34,7 +34,7 @@
 
 <form method="POST">
     <P>
-        <input type="button" value="更新" onclick="location = location">
+        <input type="button" value="更新" onclick="location = location;">
     </P>
     <p>
         宛先：
@@ -52,3 +52,7 @@
         <input type="submit" value="送信">
     </p>
 </form>
+
+<script>
+    onload = scroll(0, document.body.scrollHeight);
+</script>
