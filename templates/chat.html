@@ -37,7 +37,7 @@
     <p>
         宛先：
         <select name="receiver">
-            <option>全員</option>
+            <option>全員（{{ users | count }}人）</option>
             {% for user in users %}
                 {% if user.username != username %}
                 <option>{{ user.username }}</option>
