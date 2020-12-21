@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for
 import sqlite3
 import hashlib
 import datetime
 
 app = Flask(__name__)
+app.secret_key = 'app secret key'
 
 
 def hash(password):
@@ -38,7 +39,8 @@ def login():
             return render_template('login.html',
                                    error="ユーザーネームまたはパスワードが違います")
         else:
-            return redirect(url_for('chat', sender=user['username']), code=307)
+            session['username'] = user['username']
+            return redirect(url_for('chat'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -68,37 +70,56 @@ def register():
 
         conn.close()
 
-        return redirect(url_for('chat', sender=username), code=307)
+        session['username'] = username
+        return redirect(url_for('chat'))
 
 
-@app.route('/chat/<sender>', methods=['POST'])
-def chat(sender):
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
+@app.route('/chat')
+def chat():
+    if 'username' in session:
+        username = session['username']
 
-    c = conn.cursor()
+        conn = sqlite3.connect('database.db')
+        conn.row_factory = sqlite3.Row
 
+        c = conn.cursor()
+
+        c.execute("select * from messages")
+        messages = c.fetchall()
+
+        c.execute("select * from users")
+        users = c.fetchall()
+
+        conn.close()
+
+        return render_template('chat.html',
+                               username=username,
+                               messages=messages,
+                               users=users)
+    else:
+        return redirect(url_for('login'))
+
+
+@app.route('/send', methods=['POST'])
+def send():
     text = request.form.get('text')
 
     if text and not text.isspace():
+        conn = sqlite3.connect('database.db')
+        conn.row_factory = sqlite3.Row
+
+        c = conn.cursor()
+
+        sender = request.form.get('sender')
         receiver = request.form.get('receiver')
         date = datetime.datetime.now().strftime('%Y年%m月%d日')
         time = datetime.datetime.now().strftime('%H:%M')
 
         c.execute("insert into messages values (?, ?, ?, ?, ?)",
-                  (sender, text, receiver, date, time))
+                  (sender, receiver, text, date, time))
 
         conn.commit()
 
-    c.execute("select * from messages")
-    messages = c.fetchall()
+        conn.close()
 
-    c.execute("select * from users")
-    users = c.fetchall()
-
-    conn.close()
-
-    return render_template('chat.html',
-                           messages=messages,
-                           sender=sender,
-                           users=users)
+    return redirect(url_for('chat'))
