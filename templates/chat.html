@@ -51,7 +51,13 @@
     </p>
 </form>
 
-<a href="{{ url_for('logout') }}">ログアウト</a>
+{% for user in users %}
+    {% if user.username == username %}
+        <img src="../static/{{ user.icon }}" width="25" height="25" style="border-radius: 50%; vertical-align: middle;">
+    {% endif %}
+{% endfor %}
+<b>{{ username }}</b>
+<p><a href="{{ url_for('logout') }}">ログアウト</a></p>
 
 <script>
     onload = scroll(0, document.body.scrollHeight);
