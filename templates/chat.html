@@ -2,7 +2,7 @@
     {% if loop.changed(message.date) %}
         <b>{{ message.date }}</b><hr>
     {% endif %}
-    {% if message.sender == sender or message.receiver == "全員" or message.receiver == sender %}
+    {% if message.sender == username or message.receiver == "全員" or message.receiver == username %}
         <table style="margin-bottom: 20px;">
             <tr>
                 <td rowspan="2" valign="top">
@@ -14,7 +14,7 @@
                 </td>
                 <td>
                     <b>{{ message.sender }}</b>
-                    {% if message.sender == sender %}
+                    {% if message.sender == username %}
                         <b style="color: green;">-自分-</b>
                     {% endif %}
                     {{ message.time }}
@@ -32,16 +32,14 @@
     {% endif %}
 {% endfor %}
 
-<form method="POST">
-    <P>
-        <input type="button" value="更新" onclick="location = location;">
-    </P>
+<form action="send" method="POST">
+    <input type="hidden" name="sender" value="{{ username }}">
     <p>
         宛先：
         <select name="receiver">
             <option>全員</option>
             {% for user in users %}
-                {% if user.username != sender %}
+                {% if user.username != username %}
                 <option>{{ user.username }}</option>
                 {% endif %}
             {% endfor %}
