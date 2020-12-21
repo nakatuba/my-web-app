@@ -13,7 +13,7 @@ def hash(password):
 
 @app.route('/')
 def hello_world():
-    return redirect(url_for('login'))
+    return redirect(url_for('chat'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -123,3 +123,9 @@ def send():
         conn.close()
 
     return redirect(url_for('chat'))
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
