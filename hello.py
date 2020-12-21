@@ -82,7 +82,7 @@ def chat(sender):
 
     receiver = request.form.get('receiver')
     text = request.form.get('text')
-    if text:
+    if text and not text.isspace():
         date = datetime.datetime.now().strftime('%Y年%m月%d日')
         time = datetime.datetime.now().strftime('%H:%M')
         c.execute("insert into messages values (?, ?, ?, ?, ?)",
