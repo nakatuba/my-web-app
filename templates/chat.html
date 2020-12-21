@@ -8,7 +8,7 @@
                 <td rowspan="2" valign="top">
                     {% for user in users %}
                         {% if user.username == message.sender %}
-                            <img src={{ "../static/" + user.icon }} width="50" height="50" style="border-radius: 50%;">
+                            <img src="../static/{{ user.icon }}" width="50" height="50" style="border-radius: 50%;">
                         {% endif %}
                     {% endfor %}
                 </td>
