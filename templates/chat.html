@@ -2,7 +2,7 @@
     {% if loop.changed(message.date) %}
         <b>{{ message.date }}</b><hr>
     {% endif %}
-    {% if message.sender == username or message.receiver == "everyone" or message.receiver == username %}
+    {% if message.sender == username or message.receiver == "全員" or message.receiver == username %}
         <table style="margin-bottom: 20px;">
             <tr>
                 <td rowspan="2" valign="top">
@@ -22,7 +22,7 @@
             </tr>
             <tr>
                 <td>
-                    {% if message.receiver != "everyone" %}
+                    {% if message.receiver != "全員" %}
                         <span style="color: blue;">@{{ message.receiver }}</span>
                     {% endif %}
                     <span style="white-space: pre-wrap;">{{ message.text }}</span>
@@ -32,12 +32,14 @@
     {% endif %}
 {% endfor %}
 
+全ユーザー数：{{ users | count }}
+
 <form action="send" method="POST">
     <input type="hidden" name="sender" value="{{ username }}">
     <p>
         宛先：
         <select name="receiver">
-            <option value="everyone">全員（{{ users | count }}人）</option>
+            <option>全員</option>
             {% for user in users %}
                 {% if user.username != username %}
                 <option>{{ user.username }}</option>
