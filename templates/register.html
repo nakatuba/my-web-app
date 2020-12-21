@@ -1,4 +1,7 @@
 <form action="create" method="POST" enctype="multipart/form-data">
+    <p style="color: red;">
+        {{ error }}
+    </p>
     <p>
         アイコン<br>
         <input type="file" name="icon" accept="image/*" required>
